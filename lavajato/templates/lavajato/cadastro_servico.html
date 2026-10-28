@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Serviço</title>
+    <style>
+        :root {
+            --bg: #090909;
+            --bg-soft: #141414;
+            --panel: rgba(18, 18, 18, 0.92);
+            --panel-strong: #111111;
+            --primary: #ff2a2a;
+            --primary-strong: #d80f0f;
+            --text: #f5f5f5;
+            --muted: #d3d3d3;
+            --line: rgba(255, 255, 255, 0.08);
+            --input: #1b1b1b;
+            --input-border: rgba(255, 90, 90, 0.25);
+            --success: #ff5d5d;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #2b0505 0%, #120606 32%, #050505 100%);
+            color: var(--text);
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 18px 40px rgba(255, 42, 42, 0.12);
+            padding: 30px;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            margin-right: 15px;
+            color: var(--muted);
+            font-weight: bold;
+        }
+
+        .nav a:hover { color: var(--text); }
+
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .field { display: flex; flex-direction: column; }
+        .field.full { grid-column: 1 / -1; }
+        label { font-weight: bold; margin-bottom: 5px; color: var(--muted); }
+        input, select, textarea { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--input-border); background: var(--input); color: var(--text); font-size: 1rem; }
+        input:focus, select:focus, textarea:focus { outline: 2px solid rgba(255, 42, 42, 0.35); border-color: var(--primary); }
+        button { background: linear-gradient(135deg, var(--primary), #ff5b5b); color: white; border: none; cursor: pointer; width: 200px; margin-top: 10px; padding: 12px 16px; border-radius: 10px; font-weight: 700; box-shadow: 0 12px 22px rgba(255, 42, 42, 0.25); }
+        .messages { list-style: none; padding: 0; margin-bottom: 20px; }
+        .messages li { background: rgba(255, 42, 42, 0.12); color: #ffd0d0; border: 1px solid rgba(255, 90, 90, 0.24); padding: 10px 12px; border-radius: 8px; margin-bottom: 10px; }
+        @media (max-width: 700px) { form { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{% url 'home' %}">Início</a>
+            <a href="{% url 'cadastro_servico' %}">Serviço</a>
+            <a href="{% url 'listar_servicos' %}">Lista</a>
+        </div>
+        <h1>Cadastro de Serviço</h1>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="field {% if field.name == 'descricao' or field.name == 'valor' or field.name == 'fidelidade' %}full{% endif %}">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <small style="color: #b91c1c;">{{ field.errors }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="field full">
+                <button type="submit">Salvar</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

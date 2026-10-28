@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Veículos</title>
+    <style>
+        :root {
+            --bg: #090909;
+            --panel: rgba(18, 18, 18, 0.92);
+            --primary: #ff2a2a;
+            --primary-strong: #d80f0f;
+            --text: #f5f5f5;
+            --muted: #d3d3d3;
+            --line: rgba(255, 255, 255, 0.08);
+            --table-header: #1a1010;
+            --table-row: rgba(255, 255, 255, 0.02);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #2b0505 0%, #120606 32%, #050505 100%);
+            color: var(--text);
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: 0 18px 40px rgba(255, 42, 42, 0.12);
+            padding: 30px;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            margin-right: 15px;
+            color: var(--muted);
+            font-weight: bold;
+        }
+
+        .nav a:hover { color: var(--text); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px 10px; text-align: left; color: var(--text); }
+        th { background: var(--table-header); color: #ffd5d5; }
+        tbody tr { background: var(--table-row); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{% url 'home' %}">Início</a>
+            <a href="{% url 'cadastro_veiculo' %}">Veículo</a>
+            <a href="{% url 'listar_veiculos' %}">Lista</a>
+        </div>
+        <h1>Lista de Veículos</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Modelo</th>
+                    <th>Placa</th>
+                    <th>Tipo</th>
+                    <th>Cor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for veiculo in veiculos %}
+                    <tr>
+                        <td>{{ veiculo.pessoa.nome }}</td>
+                        <td>{{ veiculo.modelo }}</td>
+                        <td>{{ veiculo.placa }}</td>
+                        <td>{{ veiculo.tipo }}</td>
+                        <td>{{ veiculo.cor|default:'-' }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">Nenhum veículo cadastrado.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

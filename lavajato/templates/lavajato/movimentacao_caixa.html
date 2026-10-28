@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movimentação e Caixa</title>
+    <style>
+        :root {
+            --bg: #090909;
+            --panel: rgba(18, 18, 18, 0.92);
+            --primary: #ff2a2a;
+            --primary-soft: #ff5d5d;
+            --text: #f5f5f5;
+            --muted: #d3d3d3;
+            --line: rgba(255, 255, 255, 0.08);
+            --table-header: #1a1010;
+            --table-row: rgba(255, 255, 255, 0.02);
+            --success: #ff6b6b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #2b0505 0%, #120606 32%, #050505 100%);
+            color: var(--text);
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(255, 42, 42, 0.12);
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: bold;
+        }
+
+        .nav a:hover { color: var(--text); }
+
+        h1 {
+            margin: 0 0 20px;
+            font-size: clamp(1.9rem, 2vw, 2.5rem);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a0909, #111111);
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .card span {
+            color: var(--muted);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .card strong {
+            font-size: 1.8rem;
+            color: var(--text);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 10px;
+            text-align: left;
+            color: var(--text);
+        }
+
+        th {
+            background: var(--table-header);
+            color: #ffd5d5;
+        }
+
+        tbody tr {
+            background: var(--table-row);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(255, 42, 42, 0.12);
+            border: 1px solid rgba(255, 90, 90, 0.25);
+            color: #ffd4d4;
+            font-size: 0.8rem;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 8px;
+            color: var(--muted);
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 90, 90, 0.25);
+            background: #1b1b1b;
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 30px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-soft));
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 200px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 700px) {
+            .cards, form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <div class="nav">
+                <a href="{% url 'home' %}">Início</a>
+                <a href="{% url 'cadastro_pessoa' %}">Clientes</a>
+                <a href="{% url 'cadastro_veiculo' %}">Veículos</a>
+                <a href="{% url 'cadastro_servico' %}">Serviços</a>
+                <a href="{% url 'movimentacao_caixa' %}">Caixa</a>
+            </div>
+        </div>
+
+        <h1>Movimentação e Caixa</h1>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="field {% if field.name in 'veiculo servico data hora hora_entrada valor pagamento data_pagto finalizado' %}full{% endif %}">
+                    {% if field.name == 'finalizado' %}
+                        <div class="checkbox-row">
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        </div>
+                    {% else %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                    {% endif %}
+                    {% if field.errors %}
+                        <small style="color: #b91c1c;">{{ field.errors }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="field full">
+                <button type="submit">Registrar movimento</button>
+            </div>
+        </form>
+
+        <div class="cards">
+            <div class="card">
+                <span>Caixa total</span>
+                <strong>R$ {{ total_caixa }}</strong>
+            </div>
+
+            <div class="card">
+                <span>Serviços</span>
+                <strong>R$ {{ total_servicos }}</strong>
+            </div>
+
+            <div class="card">
+                <span>Últimas movimentações</span>
+                <strong>{{ quantidade }}</strong>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Veículo</th>
+                    <th>Serviço</th>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Valor</th>
+                    <th>Pagamento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for mov in movimentos %}
+                    <tr>
+                        <td>{{ mov.veiculo.placa }} / {{ mov.veiculo.modelo }}</td>
+                        <td>{{ mov.servico.descricao }}</td>
+                        <td>{{ mov.data|date:'d/m/Y' }}</td>
+                        <td>{{ mov.hora|time:'H:i' }}</td>
+                        <td>R$ {{ mov.valor }}</td>
+                        <td>
+                            <span class="badge">{{ mov.get_pagamento_display }}</span>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6">Nenhuma movimentação registrada.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

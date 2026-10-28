@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        :root {
+            --bg: #090909;
+            --panel: rgba(18, 18, 18, 0.92);
+            --primary: #ff2a2a;
+            --primary-soft: #ff5d5d;
+            --text: #f5f5f5;
+            --muted: #d3d3d3;
+            --line: rgba(255, 255, 255, 0.08);
+            --table-header: #1a1010;
+            --table-row: rgba(255, 255, 255, 0.02);
+            --success: #ff6b6b;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #2b0505 0%, #120606 32%, #050505 100%);
+            color: var(--text);
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(255, 42, 42, 0.12);
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: var(--muted);
+            font-weight: bold;
+        }
+
+        .nav a:hover { color: var(--text); }
+
+        h1 {
+            margin: 0 0 20px;
+            font-size: clamp(2rem, 2.4vw, 2.8rem);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a0909, #111111);
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .card span {
+            display: block;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .card strong {
+            font-size: 1.8rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.25fr 0.75fr;
+            gap: 22px;
+        }
+
+        .panel {
+            background: #111111;
+            border: 1px solid rgba(255, 42, 42, 0.15);
+            border-radius: 18px;
+            padding: 20px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 10px;
+            text-align: left;
+            color: var(--text);
+        }
+
+        th {
+            background: var(--table-header);
+            color: #ffd5d5;
+        }
+
+        tbody tr {
+            background: var(--table-row);
+        }
+
+        .status-box {
+            display: grid;
+            gap: 16px;
+        }
+
+        .status-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 16px;
+        }
+
+        .status-item span {
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .status-item strong {
+            font-size: 1.5rem;
+        }
+
+        .alerta {
+            background: rgba(255, 42, 42, 0.12);
+            border: 1px solid rgba(255, 120, 120, 0.3);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+
+        .alerta h3 {
+            margin: 0 0 10px;
+            color: #ffd0d0;
+        }
+
+        .alerta ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .alerta li {
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="topbar">
+            <div class="nav">
+                <a href="{% url 'home' %}">Início</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'listar_pessoas' %}">Clientes</a>
+                <a href="{% url 'listar_veiculos' %}">Veículos</a>
+                <a href="{% url 'listar_servicos' %}">Serviços</a>
+                <a href="{% url 'movimentacao_caixa' %}">Caixa</a>
+            </div>
+        </div>
+
+        <h1>Dashboard</h1>
+
+        {% if alerta_finalizacao %}
+            <div class="alerta">
+                <h3>Lavagem em andamento</h3>
+                <ul>
+                    {% for item in lavagens_em_andamento %}
+                        <li>
+                            {{ item.veiculo.modelo }} ({{ item.veiculo.placa }}) - Entrada: {{ item.hora_entrada|default:item.hora|time:'H:i' }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <div class="cards">
+            <div class="card">
+                <span>Clientes</span>
+                <strong>{{ clientes }}</strong>
+            </div>
+            <div class="card">
+                <span>Veículos</span>
+                <strong>{{ veiculos }}</strong>
+            </div>
+            <div class="card">
+                <span>Serviços</span>
+                <strong>{{ servicos }}</strong>
+            </div>
+            <div class="card">
+                <span>Faturamento</span>
+                <strong>R$ {{ faturamento_total }}</strong>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <h2>Últimas movimentações</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Veículo</th>
+                            <th>Serviço</th>
+                            <th>Valor</th>
+                            <th>Pagamento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in ultimos_movimentos %}
+                            <tr>
+                                <td>{{ item.veiculo.modelo }} / {{ item.veiculo.placa }}</td>
+                                <td>{{ item.servico.descricao }}</td>
+                                <td>R$ {{ item.valor }}</td>
+                                <td>{{ item.get_pagamento_display }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4">Nenhuma movimentação registrada.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel status-box">
+                <h2>Resumo financeiro</h2>
+                <div class="status-item">
+                    <span>Movimentações</span>
+                    <strong>{{ movimentacoes }}</strong>
+                </div>
+                <div class="status-item">
+                    <span>Pagamentos confirmados</span>
+                    <strong>{{ pagamentos_confirmados }}</strong>
+                </div>
+                <div class="status-item">
+                    <span>Pagamentos pendentes</span>
+                    <strong>{{ pagamentos_pendentes }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lavagem Express</title>
+    <style>
+        :root {
+            --bg: #090909;
+            --bg-soft: #171717;
+            --panel: rgba(20, 20, 20, 0.9);
+            --card: #111111;
+            --card-alt: #1b1b1b;
+            --primary: #ff2a2a;
+            --primary-dark: #d60a0a;
+            --success: #ff4d4d;
+            --warning: #ffb703;
+            --text: #f7f7f7;
+            --text-dark: #111111;
+            --muted: #d7d7d7;
+            --line: rgba(255,255,255,0.08);
+            --shadow: 0 20px 45px rgba(255, 0, 0, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: radial-gradient(circle at top, #2d0000 0%, #120606 28%, #050505 100%);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .container {
+            width: min(1120px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(12px);
+            background: rgba(15, 15, 15, 0.8);
+            border-bottom: 1px solid rgba(255, 42, 42, 0.25);
+        }
+
+        .topbar-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 74px;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            color: var(--text);
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), #ff6a6a);
+            box-shadow: 0 10px 22px rgba(255, 42, 42, 0.45);
+            font-size: 1.2rem;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            color: var(--muted);
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav a:hover {
+            color: var(--text);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 22px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #ff5d5d);
+            color: #fff;
+            box-shadow: 0 16px 24px rgba(255, 42, 42, 0.35);
+        }
+
+        .btn-dark {
+            background: #111111;
+            color: var(--text);
+            border: 1px solid rgba(255, 42, 42, 0.3);
+        }
+
+        .hero {
+            padding: 72px 0 52px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #ffe3e3;
+            background: rgba(255, 42, 42, 0.12);
+            border: 1px solid rgba(255, 90, 90, 0.28);
+        }
+
+        .hero h1 {
+            margin: 18px 0 16px;
+            font-size: clamp(2.5rem, 4vw, 4.5rem);
+            line-height: 1.02;
+            letter-spacing: -0.05em;
+        }
+
+        .hero p {
+            margin: 0 0 28px;
+            max-width: 580px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat {
+            min-width: 120px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 1.8rem;
+            margin-bottom: 4px;
+        }
+
+        .stat span {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .hero-card {
+            background: linear-gradient(160deg, rgba(30, 10, 10, 0.9), rgba(12, 12, 12, 0.92));
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+        }
+
+        .car-preview {
+            position: relative;
+            min-height: 420px;
+            padding: 18px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(255, 42, 42, 0.12), rgba(255, 90, 90, 0.04));
+            overflow: hidden;
+            border: 1px solid rgba(255, 120, 120, 0.2);
+        }
+
+        .car-preview::before {
+            content: "";
+            position: absolute;
+            width: 330px;
+            height: 330px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 42, 42, 0.45) 0%, rgba(255, 42, 42, 0.07) 52%, transparent 70%);
+            top: -80px;
+            right: -40px;
+        }
+
+        .mini-panel {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 42, 42, 0.2);
+            color: var(--text);
+            margin-bottom: 18px;
+        }
+
+        .mini-panel span {
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .mini-panel strong {
+            font-size: 1.1rem;
+        }
+
+        .car-illustration {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        .car-shape {
+            position: relative;
+            width: min(100%, 400px);
+            height: 180px;
+            border-radius: 28px 30px 20px 20px;
+            background: linear-gradient(135deg, #ffb0b0, #ff4d4d 35%, #d61111 100%);
+            box-shadow: 0 32px 40px rgba(255, 42, 42, 0.28);
+            transform: rotate(-2deg);
+        }
+
+        .car-shape::before {
+            content: "";
+            position: absolute;
+            left: 36px;
+            right: 36px;
+            bottom: 22px;
+            height: 38px;
+            border-radius: 14px;
+            background: rgba(12, 31, 49, 0.15);
+        }
+
+        .car-shape::after {
+            content: "";
+            position: absolute;
+            left: 42px;
+            right: 42px;
+            top: 28px;
+            height: 38px;
+            border-radius: 18px 18px 8px 8px;
+            background: rgba(255,255,255,0.35);
+        }
+
+        .wheel {
+            position: absolute;
+            bottom: -26px;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #0a1420;
+            border: 12px solid #c5d4e6;
+            box-shadow: inset 0 0 0 8px rgba(255,255,255,0.08);
+        }
+
+        .wheel.left { left: 48px; }
+        .wheel.right { right: 48px; }
+
+        .service-grid {
+            padding: 18px 0 80px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: clamp(1.8rem, 2vw, 2.6rem);
+        }
+
+        .section-title p {
+            color: #526a88;
+            margin: 0;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            background: rgba(17, 17, 17, 0.95);
+            color: var(--text);
+            border: 1px solid rgba(255, 42, 42, 0.12);
+            border-radius: 22px;
+            padding: 26px 22px;
+            box-shadow: 0 18px 30px rgba(255, 42, 42, 0.08);
+        }
+
+        .card-icon {
+            width: 54px;
+            height: 54px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            font-size: 1.5rem;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, rgba(255, 42, 42, 0.16), rgba(255, 90, 90, 0.18));
+            color: #ffb1b1;
+        }
+
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 1.28rem;
+        }
+
+        .card p {
+            margin: 0;
+            color: #d9d9d9;
+            line-height: 1.7;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 32px;
+        }
+
+        .action-box {
+            background: linear-gradient(135deg, #1a0909, #0f0f0f);
+            border: 1px solid rgba(255, 42, 42, 0.18);
+            border-radius: 24px;
+            padding: 26px;
+            box-shadow: var(--shadow);
+        }
+
+        .action-box h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            color: var(--text);
+        }
+
+        .action-box p {
+            margin-bottom: 18px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        @media (max-width: 900px) {
+            .hero-grid,
+            .cards,
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .topbar-inner {
+                flex-direction: column;
+                justify-content: center;
+                padding: 16px 0;
+            }
+
+            .nav {
+                justify-content: center;
+            }
+
+            .hero {
+                padding-top: 40px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .stats {
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <div class="brand-mark">🚗</div>
+                <span>Lavagem Express</span>
+            </div>
+
+            <nav class="nav" aria-label="Menu principal">
+                <a href="#inicio">Início</a>
+                <a href="#servicos">Serviços</a>
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'listar_pessoas' %}">Clientes</a>
+                <a href="{% url 'listar_veiculos' %}">Veículos</a>
+                <a href="{% url 'listar_servicos' %}">Agenda</a>
+                <a href="{% url 'movimentacao_caixa' %}">Movimentação e caixa</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="inicio" class="container hero">
+        <div class="hero-grid">
+            <div>
+                <span class="eyebrow">Qualidade e agilidade</span>
+                <h1>Seu carro impecável em poucos minutos.</h1>
+                <p>
+                    Organização, cuidado e rapidez para manter seu veículo sempre pronto para a rua.
+                    Centralize clientes, veículos e serviços em uma dashboard moderna e funcional.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="{% url 'cadastro_pessoa' %}">Cadastrar cliente</a>
+                    <a class="btn btn-dark" href="{% url 'cadastro_servico' %}">Novo serviço</a>
+                    <a class="btn btn-dark" href="{% url 'movimentacao_caixa' %}">Movimentação e caixa</a>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <strong>1.2k</strong>
+                        <span>lavagens</span>
+                    </div>
+                    <div class="stat">
+                        <strong>4.9/5</strong>
+                        <span>avaliação</span>
+                    </div>
+                    <div class="stat">
+                        <strong>24h</strong>
+                        <span>atendimento</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-card">
+                <div class="car-preview">
+                    <div class="mini-panel">
+                        <div>
+                            <span>Em andamento</span>
+                            <strong>Lavagem premium</strong>
+                        </div>
+                        <strong>98%</strong>
+                    </div>
+
+                    <div class="car-illustration" aria-hidden="true">
+                        <div class="car-shape">
+                            <div class="wheel left"></div>
+                            <div class="wheel right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section id="servicos" class="container service-grid">
+        <div class="section-title">
+            <h2>Serviços que fazem a diferença</h2>
+            <p>Controle rápido de todo o processo da lavajato.</p>
+        </div>
+
+        <div class="cards">
+            <article class="card">
+                <div class="card-icon">✨</div>
+                <h3>Detalhamento</h3>
+                <p>Tratamento completo para deixar o veículo brilhando, com acabamento premium e atenção aos detalhes.</p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">🧼</div>
+                <h3>Lavagem completa</h3>
+                <p>Remove sujeira, poeira e resíduos com métodos eficientes e seguros para qualquer tipo de carro.</p>
+            </article>
+
+            <article class="card">
+                <div class="card-icon">⚙️</div>
+                <h3>Gestão inteligente</h3>
+                <p>Organize clientes, veículos e serviços em um sistema centralizado, com agilidade no dia a dia.</p>
+            </article>
+        </div>
+
+        <div class="quick-actions">
+            <div class="action-box">
+                <h3>Cadastro rápido</h3>
+                <p>Cadastre clientes e veículos em poucos passos, mantendo tudo organizado e pronto para o atendimento.</p>
+                <a class="btn btn-primary" href="{% url 'cadastro_veiculo' %}">Cadastrar veículo</a>
+            </div>
+
+            <div class="action-box">
+                <h3>Relatórios e fluxo</h3>
+                <p>Acompanhe o histórico de serviços e mantenha o controle de cada etapa da lavagem com facilidade.</p>
+                <a class="btn btn-dark" href="{% url 'listar_pessoas' %}">Ver clientes</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+
